@@ -30,7 +30,7 @@ This project is a FastAPI-based web app that allows users to extract and interac
 
 ## 📁 Project Structure
 
-excel\_fastapi\_app/
+excel_fastapi_app/
 ├── app/
 │   ├── **init**.py
 │   ├── main.py             # FastAPI app entry point
