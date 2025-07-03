@@ -1,0 +1,7 @@
+fastapi
+uvicorn
+pandas
+openpyxl
+python-dotenv
+requests
+xlrd >= 2.0.1
