@@ -1,134 +1,148 @@
 
-# 🧾 Excel Data API
-
-This project exposes RESTful APIs to extract, summarize, and inspect data from Excel files, primarily for capital budgeting analysis.
+* 📄 Project Overview
+* 🚀 Setup & Installation
+* 🧪 API Usage (with sample requests)
+* 💡 Insights: Improvements + Edge Cases
+* 📁 Folder Structure
+* 🧾 Postman Collection
+* 📚 License + Credits
 
 ---
 
-## 📌 Endpoints
+### ✅ `README.md`
 
-### `GET /list_tables`
+```markdown
+# 📊 Excel-FastAPI App with LLM Integration (Groq)
 
-Returns a list of available Excel sheet names (or logical tables if implemented).
+This project is a FastAPI-based web app that allows users to extract and interact with data from Excel files (e.g., `.xls`, `.xlsx`) through RESTful APIs. Additionally, users can ask questions about the Excel data in natural language using an LLM (e.g., Groq with Gemma/LLama3).
 
-**Response**
+---
+
+## 🚀 Features
+
+- Upload and read `.xls` Excel files
+- List all available worksheets
+- View specific worksheet content
+- Calculate row-level sums of values
+- Ask questions in natural language using an integrated Groq-hosted LLM
+
+---
+
+## 📁 Project Structure
+
+```
+
+excel\_fastapi\_app/
+├── app/
+│   ├── **init**.py
+│   ├── main.py             # FastAPI app entry point
+│   ├── excel\_utils.py      # Excel reading & row operations
+│   └── llm\_utils.py        # LLM (Groq API) question-answering
+├── .env                    # Environment variables (GROQ\_API\_KEY)
+├── requirements.txt        # Python dependencies
+└── run.sh                  # Run script (Linux/macOS)
+
+````
+
+---
+
+## 🔧 Setup & Installation
+
+### 1. Clone the Repo
+
+```bash
+git clone https://github.com/yourusername/excel-fastapi-llm.git
+cd excel-fastapi-llm
+````
+
+### 2. Install Requirements
+
+```bash
+pip install -r requirements.txt
+```
+
+### 3. Add Environment Variable
+
+Create a `.env` file:
+
+```env
+GROQ_API_KEY=your_actual_groq_api_key
+```
+
+### 4. Run the App
+
+```bash
+uvicorn app.main:app --host 0.0.0.0 --port 9090 --reload
+```
+
+Then open [http://localhost:9090/docs](http://localhost:9090/docs)
+
+---
+
+## 🔌 API Endpoints
+
+| Method | Endpoint                         | Description                              |
+| ------ | -------------------------------- | ---------------------------------------- |
+| `GET`  | `/list_tables`                   | Lists available sheets in Excel          |
+| `GET`  | `/get_table_details?table_name=` | Returns content of a sheet               |
+| `GET`  | `/row_sum?table_name=&row_name=` | Returns sum of numeric values in the row |
+| `POST` | `/ask_question`                  | Asks an LLM about the Excel data         |
+
+### 📥 Sample POST `/ask_question`
 
 ```json
 {
-  "tables": ["Initial Investment", "Revenue Projections", "Operating Expenses"]
+  "question": "What is the total budgeted amount?"
 }
 ```
-
----
-
-### `GET /get_table_details?table_name=<TABLE_NAME>`
-
-Returns all row labels (typically from the first column) for the given table/sheet.
-
-**Example**
-
-```http
-GET /get_table_details?table_name=Initial Investment
-```
-
-**Response**
-
-```json
-{
-  "table_name": "Initial Investment",
-  "row_names": [
-    "Initial Investment=",
-    "Opportunity cost (if any)=",
-    "Lifetime of the investment",
-    "Salvage Value at end of project=",
-    "Deprec. method(1:St.line;2:DDB)=",
-    "Tax Credit (if any )=",
-    "Other invest.(non-depreciable)="
-  ]
-}
-```
-
----
-
-### `GET /row_sum?table_name=<TABLE_NAME>&row_name=<ROW_NAME>`
-
-Returns the sum of numeric values in the specified row across columns.
-
-**Example**
-
-```http
-GET /row_sum?table_name=Initial Investment&row_name=Tax Credit (if any )=
-```
-
-**Response**
-
-```json
-{
-  "table_name": "Initial Investment",
-  "row_name": "Tax Credit (if any )=",
-  "sum": 10
-}
-```
-
----
-
-## 📂 Postman Collection
-
-A complete Postman collection with sample requests and example responses is included in this repo:
-📁 `ExcelAPI.postman_collection.json`
-*Import into Postman to test all endpoints easily.*
 
 ---
 
 ## 💡 Your Insights
 
-### ✅ Potential Improvements
+### 🔁 Potential Improvements
 
-1. **Multi-format Excel Support**
-   Add compatibility for `.xlsx`, `.xlsm`, `.ods` using `openpyxl` and `pyxlsb`.
-
-2. **Logical Table Extraction from One Sheet**
-   Add logic to extract named sections from a single sheet by detecting titles or separators (e.g., bolded headers or merged cells).
-
-3. **Advanced Data Aggregations**
-   Include endpoints like:
-
-   * Column-wise stats (mean, std, count)
-   * `GET /search_rows?contains=investment` to filter by keywords
-
-4. **UI Integration**
-   A front-end interface (via Streamlit or React) could allow users to upload Excel files and view sheet data interactively.
-
-5. **File Upload Endpoint**
-   A POST endpoint to upload Excel files via API, storing them temporarily or persistently.
-
----
+* Add support for `.xlsx` with `openpyxl` or `pandas`
+* Enable Excel file upload via `/upload_excel` endpoint
+* Add Streamlit UI or Swagger-based form input
+* Let users choose LLMs (Groq/Gemini/OpenAI) via params
+* Enable visual summaries (charts, heatmaps)
 
 ### ⚠️ Missed Edge Cases
 
-* **Empty or Malformed Excel Files** – Could return no response or crash.
-* **Duplicate Row Names** – The API doesn't clarify which one was summed.
-* **Non-Numeric Row Values** – Mixed or invalid types could silently fail.
-* **Case Sensitivity** – `Initial Investment` ≠ `initial investment` unless normalized.
-* **Whitespace Sensitivity** – Rows with extra spaces won't match unless trimmed.
-* **No Table Name Provided** – Currently results in `422 Unprocessable Entity` errors.
+* Empty Excel sheets or corrupt files
+* Non-numeric rows (e.g., fully textual) in sum operation
+* Very large files not handled asynchronously
+* Malformed sheet/table names
+* Lack of caching for LLM responses (to reduce latency/cost)
 
 ---
 
-## 🧑‍💻 Developer Notes
+## 📬 Postman Collection
 
-### Folder Structure
+You can import the attached `ExcelLLM.postman_collection.json` file into Postman to test all endpoints quickly.
+
+---
+
+## 📜 License
+
+MIT License
+
+---
+
+## 🙌 Acknowledgements
+
+* [FastAPI](https://fastapi.tiangolo.com/)
+* [Groq API](https://console.groq.com/)
+* [xlrd](https://pypi.org/project/xlrd/)
+* [LangChain](https://www.langchain.com/)
+
 
 ```
-├── main.py                 # FastAPI app
-├── excel_utils.py          # Sheet parsing, row extraction logic
-├── sample.xls              # Example Excel used for testing
-├── README.md               # Documentation
-├── ExcelAPI.postman_collection.json  # Postman test cases
-```
 
-### Code Documentation
+---
 
-* Functions and endpoints are fully annotated with docstrings.
-* Uses type hints (`str`, `List[str]`, etc.) to ensure clarity.
-* Error handling for common request issues is implemented.
+### ✅ Notes
+
+1. Replace `your_actual_groq_api_key` with your Groq key in `.env`  
+
