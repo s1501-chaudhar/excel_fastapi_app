@@ -29,9 +29,6 @@ This project is a FastAPI-based web app that allows users to extract and interac
 ---
 
 ## 📁 Project Structure
-
-```
-
 excel\_fastapi\_app/
 ├── app/
 │   ├── **init**.py
@@ -41,8 +38,7 @@ excel\_fastapi\_app/
 ├── .env                    # Environment variables (GROQ\_API\_KEY)
 ├── requirements.txt        # Python dependencies
 └── run.sh                  # Run script (Linux/macOS)
-
-````
+```
 
 ---
 
